@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- 默认的视图主题 -->
+    <constant name="struts.ui.theme" value="simple" />
+    <!--   替换对象工厂里原来的Action，将Action交由Spring管理 -->
+	<constant name="struts.objectFactory" value="spring" />
+	
+	<package name="booking" extends="struts-default">
+	<!-- Spring会根据class=""中的名字去找对应的Bean（Action类） -->
+	 	
+	 	<action name="user_*" class="userAction" method="{1}">
+	 		<result name="register">/index.jsp</result>
+	 		<result name="login">/index.jsp</result>
+	 		<result name="logout">/index.jsp</result>
+	 		<result name="findall">/manager.jsp</result>
+	 		<result name="error" >/error.jsp</result>
+	 		<result name="findbyid" type="redirectAction">order_findByUser</result>
+	 	</action>
+	 	<action name="manager_*" class="managerAction" method="{1}">
+	 		<result name="success" type="redirect">/manager.jsp</result>
+	 		<result name="error">/error.jsp</result>
+	 		<result name="logout">/managerlogin.jsp</result>
+	 	</action>
+	 	<action name="hotel_*" class="hotelAction" method="{1}">
+	 	    <result name="findSuccess">/hotellist.jsp</result>
+	 	    <result name="findall">/managerhotel.jsp</result>
+	 	    <result name="findbyid" type="redirectAction">room_find</result>
+	 	    <result name="agreeSuccess" type="redirectAction">hotel_findall</result>
+	 	    <result name="deleteSuccess" type="redirectAction">hotel_findall</result>
+	 	    <result name="findorder" type="redirectAction">room_findOrder</result>
+	 	    <result name="findbyuser" type="redirectAction">room_findMyRoom</result>
+	 	    <result name="saveSuccess">/index.jsp</result>
+	 	    <result name="error">/error.jsp</result>
+	 	</action>
+	 	<action name="room_*" class="roomAction" method="{1}">
+	 	    <result name="findlist">/hotelinfo.jsp</result>
+	 	    <result name="findtoorder">/inputOrder.jsp</result>
+	 	    <result name="findorder" type="redirectAction">order_findByRoom</result>
+	 	    <result name="saveSuccess" type="redirectAction">room_findMyRoom</result>
+	 	    <result name="findmyroom">/myhotel.jsp</result>
+	 	    <result name="error">/error.jsp</result>
+	 	</action>
+	 	<action name="order_*" class="orderAction" method="{1}">
+	 	    <result name="findbyuser">/orderlist.jsp</result>
+	 	    <result name="saveSuccess" type="redirectAction">orderItem_save</result>
+	 	    <result name="findbyroom">/myHotelOrder.jsp</result>
+	 	    <result name="liveSuccess" type="redirectAction">hotel_findOrder</result>
+	 	    <result name="error">/error.jsp</result>
+	 	</action>
+	 	<action name="orderItem_*" class="orderItemAction" method="{1}">
+	 	    <result name="saveSuccess">/orderOK.jsp</result>
+	 	</action>
+	 </package>
+</struts>

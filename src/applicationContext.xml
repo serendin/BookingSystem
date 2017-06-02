@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/booking" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>com/bean/User.hbm.xml</value>
+				<value>com/bean/Hotel.hbm.xml</value>
+				<value>com/bean/Manager.hbm.xml</value>
+				<value>com/bean/Order.hbm.xml</value>
+				<value>com/bean/OrderItem.hbm.xml</value>
+				<value>com/bean/Room.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<!-- 事务拦截器bean需要依赖注入一个事务管理器 -->
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<!-- 下面定义事务传播属性 -->
+			<props>
+				<prop key="find*,get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="save*,update*,delete*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="userDao" class="com.dao.impl.UserDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="hotelDao" class="com.dao.impl.HotelDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="managerDao" class="com.dao.impl.ManagerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="orderItemDao" class="com.dao.impl.OrderItemDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="orderDao" class="com.dao.impl.OrderDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="roomDao" class="com.dao.impl.RoomDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="userService" class="com.service.impl.UserServiceImpl">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	<bean id="hotelService" class="com.service.impl.HotelServiceImpl">
+		<property name="hotelDao" ref="hotelDao"></property>
+	</bean>
+	<bean id="managerService" class="com.service.impl.ManagerServiceImpl">
+		<property name="managerDao" ref="managerDao"></property>
+	</bean>
+	<bean id="orderItemService" class="com.service.impl.OrderItemServiceImpl">
+		<property name="orderItemDao" ref="orderItemDao"></property>
+	</bean>
+	<bean id="orderService" class="com.service.impl.OrderServiceImpl">
+		<property name="orderDao" ref="orderDao"></property>
+	</bean>
+	<bean id="roomService" class="com.service.impl.RoomServiceImpl">
+		<property name="roomDao" ref="roomDao"></property>
+	</bean>
+	
+	<bean id="userAction" class="com.action.UserAction" scope="prototype">
+	    <property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="hotelAction" class="com.action.HotelAction" scope="prototype">
+	    <property name="hotelService" ref="hotelService"></property>
+	</bean>
+	<bean id="managerAction" class="com.action.ManagerAction" scope="prototype">
+	    <property name="managerService" ref="managerService"></property>
+	</bean>
+	<bean id="orderItemAction" class="com.action.OrderItemAction" scope="prototype">
+	    <property name="orderItemService" ref="orderItemService"></property>
+	</bean>
+	<bean id="orderAction" class="com.action.OrderAction" scope="prototype">
+	    <property name="orderService" ref="orderService"></property>
+	</bean>
+	<bean id="roomAction" class="com.action.RoomAction" scope="prototype">
+	    <property name="roomService" ref="roomService"></property>
+	</bean>
+	
+</beans>
